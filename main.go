@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/aphiwit1/notes-app/ent"
@@ -99,6 +100,12 @@ func main() {
 		})
 	}
 
-	log.Println("Server started at :8080")
-	r.Run(":8080")
+	// อ่าน PORT จาก environment variable (ถ้าไม่มี ให้ default เป็น 8080)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Println("Server started at :" + port)
+	r.Run(":" + port)
 }
