@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/aphiwit1/notes-app/ent"
+	"github.com/aphiwit1/notes-app/ent/note" // ใช้ predicate จาก model note
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
@@ -33,8 +34,21 @@ func main() {
 
 	api := r.Group("/api")
 	{
+		// GET /notes?title=xxx&content=yyy
 		api.GET("/notes", func(c *gin.Context) {
-			notes, err := client.Note.Query().Order(ent.Desc("created_at")).All(ctx)
+			title := c.Query("title")
+			content := c.Query("content")
+
+			query := client.Note.Query()
+
+			if title != "" {
+				query = query.Where(note.TitleContains(title))
+			}
+			if content != "" {
+				query = query.Where(note.ContentContains(content))
+			}
+
+			notes, err := query.Order(ent.Desc("created_at")).All(ctx)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
