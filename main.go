@@ -9,6 +9,7 @@ import (
 
 	"github.com/aphiwit1/notes-app/ent"
 	"github.com/aphiwit1/notes-app/ent/note" // ใช้ predicate จาก model note
+	"github.com/aphiwit1/notes-app/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
@@ -31,6 +32,7 @@ func main() {
 
 	r := gin.Default()
 	r.Use(cors.Default())
+	r.Use(middleware.TimerMiddleware()) // ใช้ middleware สำหรับบันทึกเวลา
 
 	api := r.Group("/api")
 	{
