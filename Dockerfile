@@ -16,8 +16,8 @@ RUN go mod download
 # คัดลอก source code ทั้งหมด
 COPY . .
 
-# สร้าง binary
-RUN go build -o main .
+# สร้าง binary ที่ถูกต้อง
+RUN go build -o main ./cmd
 
 # ---------- Stage 2: Run ----------
 FROM debian:bullseye-slim
