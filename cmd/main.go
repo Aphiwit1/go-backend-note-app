@@ -44,13 +44,15 @@ func main() {
 	}
 
 	r := gin.Default()
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8080"}, // URL frontend ของคุณ
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowOrigins:     []string{"http://localhost:5173"}, // frontend URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
+
 	r.Use(middleware.TimerMiddleware())
 
 	// Login endpoint
@@ -68,7 +70,7 @@ func main() {
 		log.Println("Password:", body.Password)
 
 		// สมมุติ username=admin password=1234
-		if body.Username != "a" || body.Password != "a" {
+		if body.Username != "admin" || body.Password != "1234" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "wrong username or password"})
 			return
 		}
@@ -78,7 +80,6 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"token": token})
 	})
 
-	// Protected endpoint
 	r.GET("/profile", func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -103,7 +104,7 @@ func main() {
 	})
 
 	api := r.Group("/api")
-	// r.Use(middleware.AuthMiddleware()) // // ✅ ป้องกันเฉพาะ /api/*
+	api.Use(middleware.AuthMiddleware()) // // ✅ ป้องกันเฉพาะ /api/*
 	{
 		// ใช้ handlers จากไฟล์ note.go
 		noteHandlers := handlers.NewNoteHandlers(client, ctx)
